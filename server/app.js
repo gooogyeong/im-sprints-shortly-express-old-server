@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 
 const cors = require('cors');
 const session = require('express-session');
+var FileStore = require('session-file-store')(session)
+//var MySQLStore = require('express-mysql-session')(session);
 const cookieParser = require('cookie-parser');
 
 const userRouter = require('./routes/user');
@@ -15,11 +17,22 @@ const morgan = require('morgan');
 const app = express();
 const port = 3001;
 
+// var sessionStore = new MySQLStore(options); 
+
+// var options ={                                               
+//   host: 'root',
+//   port: 3001,
+//   user: 'root',
+//   password: '12345',
+//   database: 'shortly'
+// };
+
 app.use(
   session({
     secret: '@codestates',
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    store:new FileStore()
   })
 );
 
@@ -35,7 +48,7 @@ app.use(
 );
 
 // ? POSTMAN을 통한 test에 필요할지도 모릅니다. logging을 활용하세요.
-//app.use(morgan('dev'));
+// app.use(morgan('dev'));
 
 // TODO : GET / 요청에 대한 응답을 작성해주세요. (api 구현을 가볍게 시작해보세요.)
 // app. ...
@@ -63,12 +76,14 @@ app.get('/D*', (req, res) => {
     });
 });
 
+app.get('/', function(req, res){res.send("Success")})
+
 app.use('/user', userRouter);
 app.use('/links', linksRouter);
 
 app.set('port', port);
 app.listen(app.get('port'), () => {
-  //console.log(`app is listening in PORT ${app.get('port')}`);
+  console.log(`app is listening in PORT ${app.get('port')}`);
 });
 
 module.exports = app;
